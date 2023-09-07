@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shaishav android lab</string>
+    <string name="hello_message">Bonjour le monde!</string>
+    <string name="button_message">je suis un bouton</string>
+</resources>
