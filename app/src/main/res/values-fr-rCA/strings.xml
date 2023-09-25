@@ -6,4 +6,5 @@
     <string name="button1">Bouton</string>
     <string name="button2">Bouton</string>
     <string name="button3">Bouton</string>
+    <string name="spin_message">Tourner le drapeau</string>
 </resources>
