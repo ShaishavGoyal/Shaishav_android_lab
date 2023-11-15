@@ -45,6 +45,15 @@ public class ChatRoom extends AppCompatActivity {
         setContentView(binding.getRoot());
         EditText textInput=findViewById(R.id.textInput);
         messages = chatModel.messages.getValue();
+        chatModel.selectedMessage.observe(this, (newValue) -> {
+            MessageDetailsFragment chatFragment = new MessageDetailsFragment(newValue);
+            chatFragment.displayMessage(newValue);
+            getFragmentManager()
+                    .beginTransaction()
+                    .addToBackStack("")
+                    .replace(R.id.fragmentLocation, chatFragment)
+                    .commit();
+        });
         if(messages == null)
         {
             chatModel.messages.setValue(messages = new ArrayList<>());
@@ -150,30 +159,10 @@ public class ChatRoom extends AppCompatActivity {
             ChatMessageDAO mDAO = db.cmDAO();
             itemView.setOnClickListener(clk->{
                 int position = getAbsoluteAdapterPosition();
-                AlertDialog.Builder builder = new AlertDialog.Builder( ChatRoom.this );
-                builder.setMessage("Do you want to delete the message: "+messageText.getText())
-                        .setTitle("Question:")
-                        .setNegativeButton("No", (dialog,cl)->{})
-                        .setPositiveButton("Yes", (dialog,cl)->{
-                            ChatMessage removedMessage = messages.remove(position);
-                            Executor thread1 = Executors.newSingleThreadExecutor();
-                            thread1.execute(() ->{
-                                mDAO.deleteMessage(removedMessage);//add to database;
-                            });
-                            myAdapter.notifyItemRemoved(position);
-                            Snackbar.make(messageText,"You deleted message #"+position, Snackbar.LENGTH_LONG)
-                                    .setAction("Undo",click->{
-                                        messages.add(position, removedMessage);
-                                        myAdapter.notifyItemInserted(position);
-                                        Executor thread2 = Executors.newSingleThreadExecutor();
-                                        thread1.execute(() ->{
-                                            mDAO.insertMessage(removedMessage);
+                ChatMessage selected = messages.get(position);
 
-                                        });
-                                    })
-                                    .show();
-                        })
-                        .create().show();
+                chatModel.selectedMessage.postValue(selected);
+
             });
             messageText = itemView.findViewById(R.id.messageText);
             timeText = itemView.findViewById(R.id.timeText);
